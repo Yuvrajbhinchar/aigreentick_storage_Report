@@ -1,6 +1,7 @@
 package com.aigreentick.services.storage.report.repository;
 
 import com.aigreentick.services.storage.report.view.DailyUploadActivityView;
+import com.aigreentick.services.storage.report.view.TopUploadingUserView;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -35,6 +36,28 @@ public interface MediaReportRepository {
             @Param("orgId")  Long orgId,
             @Param("userId") Long userId,
             @Param("mediaType") String mediaType
+    );
+
+    @Query(value = """
+        SELECT
+            m.user_id                          AS userId,
+            m.organisation_id                  AS organisationId,
+            COUNT(*)                           AS uploads,
+            COALESCE(SUM(m.file_size), 0)      AS totalBytes
+        FROM media m
+        WHERE m.is_deleted = false
+          AND m.created_at >= :fromTs
+          AND m.created_at <  :toTs
+          AND (:orgId IS NULL OR m.organisation_id = :orgId)
+        GROUP BY m.user_id, m.organisation_id
+        ORDER BY uploads DESC
+        LIMIT :limit
+        """, nativeQuery = true)
+    List<TopUploadingUserView> findTopUploadingUsers(
+            @Param("fromTs") OffsetDateTime fromTs,
+            @Param("toTs")   OffsetDateTime toTs,
+            @Param("orgId")  Long orgId,
+            @Param("limit")  Integer limit
     );
 
 }

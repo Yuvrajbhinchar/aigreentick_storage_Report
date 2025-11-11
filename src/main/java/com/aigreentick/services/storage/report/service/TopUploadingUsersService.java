@@ -3,6 +3,7 @@ package com.aigreentick.services.storage.report.service;
 import com.aigreentick.services.storage.report.dto.TopUploadingUserDto;
 import com.aigreentick.services.storage.report.repository.MediaReportRepository;
 import com.aigreentick.services.storage.report.view.TopUploadingUserView;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -17,15 +18,13 @@ import java.util.List;
  * - Maps projection results into DTOs
  */
 @Service
+@RequiredArgsConstructor
 public class TopUploadingUsersService {
 
     private static final ZoneId BUSINESS_ZONE = ZoneId.of("Asia/Kolkata");
     private static final int DEFAULT_LIMIT = 10;
     private final MediaReportRepository repo;
 
-    public TopUploadingUsersService(MediaReportRepository repo) {
-        this.repo = repo;
-    }
 
     /**
      * Fetch top uploading users.
